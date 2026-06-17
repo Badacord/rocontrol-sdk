@@ -19,9 +19,10 @@ If every server reported every occurrence, RoControl would get hammered.
 
 The SDK solves this in two layers:
 
-1. **Cross-server single-flight** via MemoryStore (Phase 4): all servers compute
-   the same `occurrenceId = key:startedAt` and race for an atomic claim. Only the
-   winner sends. *(Until Phase 4 ships, every server sends and layer 2 dedupes.)*
+1. **Cross-server single-flight** via MemoryStore: all servers compute the same
+   `occurrenceId = key:startedAt` and race for an atomic claim. Only the winner
+   sends; the rest return `status = "duplicate"`. If MemoryStore is unavailable,
+   the SDK falls back to a per-server debounce.
 2. **Backend idempotency** keyed by `universeId:event:occurrenceId`: duplicate
    reports are safe no-ops. This is the correctness guarantee; the lease is the
    efficiency optimization.

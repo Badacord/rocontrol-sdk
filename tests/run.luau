@@ -16,6 +16,9 @@ local specs = {
 	require("./unit/Hash.spec"),
 	require("./unit/CanonicalJson.spec"),
 	require("./unit/Sequential.spec"),
+	require("./unit/MemoryStoreLease.spec"),
+	require("./unit/LocalDebounce.spec"),
+	require("./unit/OccurrenceId.spec"),
 }
 
 local t = Harness.new()

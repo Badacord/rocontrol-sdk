@@ -4,18 +4,21 @@
 -- game. Network outcomes surface through metrics, logs, and the failed-operation
 -- signal.
 --
--- Phase markers:
---   * Canonical schedule hashing  -> Phase 2 (src/Schedules). Phase 1 uses a
---     simple stable placeholder so coalescing/idempotency already work.
---   * MemoryStore single-flight   -> Phase 4 (src/Leases). Until then every
---     server reports and the backend idempotency layer dedupes.
+-- Schedule registration uses canonical-JSON content hashing (src/Schedules).
+-- reportEvent is single-flighted across servers via a MemoryStore lease
+-- (src/Leases), with a per-server debounce fallback when MemoryStore is
+-- unavailable; the backend idempotency layer is the correctness backstop.
 
 local Types = require(script.Parent.Types)
 local Runtime = require(script.Parent.Runtime)
 local Schedules = require(script.Parent.Schedules)
+local Leases = require(script.Parent.Leases)
+local OccurrenceId = require(script.Parent.Events.OccurrenceId)
 local Metrics = require(script.Parent.Metrics.Metrics)
 local ErrorFactory = require(script.Parent.Errors)
 local Uuid = require(script.Parent.Internal.Uuid)
+
+local MemoryStoreLease = Leases.MemoryStoreLease
 
 type RoControlClient = Types.RoControlClient
 type RoControlSchedule = Types.RoControlSchedule
@@ -31,10 +34,6 @@ Client.__index = Client
 local MAX_PENDING = 64
 local FLUSH_STEP_SECONDS = 0.05
 local FLUSH_TIMEOUT_SECONDS = 8
-
-local function normalizeKey(key: string): string
-	return (string.gsub(string.lower(key), "%s+", "-"))
-end
 
 function Client.new(resolvedConfig: any, overrides: Runtime.Overrides?): RoControlClient
 	local runtime = Runtime.create(resolvedConfig, overrides)
@@ -187,10 +186,41 @@ function Client.reportEvent(self: any, input: ReportEventInput): OperationResult
 		return { ok = false, status = "failed", error = ErrorFactory.validation("event.key is required") }
 	end
 
-	local startedAt = input.startedAt or self._runtime.clock:now()
-	local occurrenceId = input.occurrenceId or (normalizeKey(input.key) .. ":" .. tostring(startedAt))
+	local runtime = self._runtime
+	local startedAt = input.startedAt or runtime.clock:now()
+	local occurrenceId = input.occurrenceId or OccurrenceId.build(input.key, startedAt)
 
-	local env = self._runtime.env
+	-- Cross-server single-flight: only one server actually reports an occurrence.
+	-- Lease for efficiency; backend idempotency for correctness.
+	local ttl = MemoryStoreLease.computeTtl(input.durationSeconds)
+	local now = runtime.clock:now()
+	if runtime.config.enableMemoryStoreLease then
+		local outcome = MemoryStoreLease.tryClaim({
+			hashMap = runtime.getLeaseHashMap(),
+			now = now,
+			jobId = runtime.env.jobId,
+			occurrenceId = occurrenceId,
+			ttlSeconds = ttl,
+			sdkVersion = runtime.metadata.version,
+		})
+		if outcome == "won" then
+			runtime.metrics:count(Metrics.Names.leaseWin)
+		elseif outcome == "lost" then
+			runtime.metrics:count(Metrics.Names.leaseLoss)
+			return { ok = true, status = "duplicate" }
+		else
+			-- MemoryStore unavailable: degrade to per-server debounce.
+			runtime.metrics:count(Metrics.Names.leaseError)
+			runtime.logger:warn("lease unavailable; using local debounce", { event = "lease_unavailable" })
+			if not runtime.localDebounce:shouldSend(occurrenceId, now, ttl) then
+				return { ok = true, status = "duplicate" }
+			end
+		end
+	elseif not runtime.localDebounce:shouldSend(occurrenceId, now, ttl) then
+		return { ok = true, status = "duplicate" }
+	end
+
+	local env = runtime.env
 	local payload = {
 		sdkVersion = self._runtime.metadata.version,
 		protocolVersion = self._runtime.metadata.protocolVersion,

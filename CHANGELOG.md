@@ -8,6 +8,18 @@ The SDK package version and the wire `protocolVersion` are tracked separately.
 
 ## [Unreleased]
 
+### Added — Phase 4 (imperative reporting)
+
+- Cross-server single-flight `MemoryStoreLease` (atomic claim on a MemoryStore
+  hash map; exactly one server reports an occurrence) with a per-server
+  `LocalDebounce` fallback when MemoryStore is unavailable.
+- Deterministic `OccurrenceId` (`<normalizedKey>:<startedAt>`) so every server and
+  the backend agree on the idempotency key.
+- `Client.reportEvent` now resolves single-flight before dispatching: winner
+  sends, losers return `duplicate`; emits lease win/loss/error metrics.
+- `Env` now exposes `universeId` (game.GameId) for the lease namespace.
+- 11 new pure-logic tests (46 total, all green).
+
 ### Added — Phase 2 (declarative schedules)
 
 - Canonical JSON serializer (sorted keys, integer-only, cross-language stable).

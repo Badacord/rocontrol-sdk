@@ -7,6 +7,7 @@ export type Environment = {
 	isServer: boolean,
 	isClient: boolean,
 	isStudio: boolean,
+	universeId: number,
 	placeId: number,
 	placeVersion: number,
 	jobId: string,
@@ -30,10 +31,12 @@ function Env.detect(): Environment
 		isStudio = RunService:IsStudio()
 	end
 
+	local universeId = 0
 	local placeId = 0
 	local placeVersion = 0
 	local jobId = ""
 	pcall(function()
+		universeId = game.GameId -- universe id (stable across places in the experience)
 		placeId = game.PlaceId
 		placeVersion = game.PlaceVersion
 		jobId = game.JobId
@@ -43,6 +46,7 @@ function Env.detect(): Environment
 		isServer = isServer,
 		isClient = isClient,
 		isStudio = isStudio,
+		universeId = universeId,
 		placeId = placeId,
 		placeVersion = placeVersion,
 		jobId = jobId,

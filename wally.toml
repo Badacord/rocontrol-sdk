@@ -1,0 +1,21 @@
+[package]
+name = "rocontrol/rocontrol-roblox-sdk"
+description = "Official RoControl SDK for Roblox — server-only, typed, production-grade game integration."
+version = "0.1.0"
+license = "Apache-2.0"
+authors = ["RoControl"]
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "server"
+exclude = ["**"]
+include = [
+	"src",
+	"src/**",
+	"default.project.json",
+	"wally.toml",
+	"README.md",
+	"LICENSE",
+	"CHANGELOG.md",
+]
+
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"

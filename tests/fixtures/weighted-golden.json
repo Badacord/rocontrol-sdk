@@ -1,0 +1,5 @@
+{
+  "_note": "Filled in Phase 2. Golden vectors for the mulberry32-fnv1a32 weighted rotation: given (scheduleHash, cycleIndex, events[]), the chosen event key. Must match between the Luau SDK and the TypeScript backend.",
+  "algorithm": "mulberry32-fnv1a32",
+  "cases": []
+}

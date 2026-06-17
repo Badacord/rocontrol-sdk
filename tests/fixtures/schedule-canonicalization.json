@@ -1,0 +1,4 @@
+{
+  "_note": "Filled in Phase 2. Each case: an input RoControlSchedule plus its expected canonical JSON string and content hash, verified identically in Luau and TypeScript.",
+  "cases": []
+}

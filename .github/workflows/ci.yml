@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain (rokit)
+        uses: CompeyDev/setup-rokit@v0.1.2
+
+      - name: Install dependencies
+        run: wally install
+
+      - name: Format check
+        run: stylua --check src tests examples
+
+      - name: Lint
+        run: selene src tests examples
+
+      - name: Run pure-logic tests
+        run: lune run tests/run.luau
+
+      - name: Build model files
+        run: |
+          mkdir -p build
+          rojo build default.project.json --output build/RoControl.rbxm
+          rojo build default.project.json --output build/RoControl.rbxmx
+
+      - name: Generate sourcemap
+        run: rojo sourcemap default.project.json --output sourcemap.json
+
+      - name: Verify version matches metadata
+        run: lune run scripts/check-version.luau

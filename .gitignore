@@ -1,0 +1,20 @@
+# Wally
+/Packages
+/ServerPackages
+/DevPackages
+
+# Rojo / build artifacts
+/build
+sourcemap.json
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Tooling
+/.lune
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

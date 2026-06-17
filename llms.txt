@@ -1,0 +1,27 @@
+# RoControl Roblox SDK
+
+> Server-only Luau SDK that reports events and schedules to RoControl. Powers Icon
+> Automation event overlays. Typed, with structured logging, retries, a circuit
+> breaker, a bounded queue, and a cross-server single-flight lease.
+
+## Docs
+- [Overview](docs/index.md): What the SDK does and when to use each mode.
+- [Installation](docs/installation.md): Wally, model file, and Rojo/source installs.
+- [Quickstart](docs/quickstart.md): Minimal server-only setup.
+- [API reference](docs/api-reference.md): Public Luau types and client methods.
+- [Event schedules](docs/event-schedules.md): Declarative deterministic schedules.
+- [Reporting live events](docs/reporting-live-events.md): Imperative reporting, idempotency, leases.
+- [ragdoll-luckyblock example](docs/ragdoll-luckyblock-example.md): Worked adapter example.
+- [Security](docs/security.md): API key handling and server-only integration.
+- [Troubleshooting](docs/troubleshooting.md): 429s, MemoryStore, moderation, key rotation.
+- [Contributing](docs/contributing.md): How to contribute.
+
+## Source
+- [src/init.luau](src/init.luau): Public entry point and server-only guard.
+- [src/Types.luau](src/Types.luau): Public Luau types.
+- [src/Client.luau](src/Client.luau): Main SDK client.
+- [src/Config.luau](src/Config.luau): Config defaults and validation.
+- [src/Http/HttpClient.luau](src/Http/HttpClient.luau): HTTP with retry and circuit breaker.
+- [src/Http/Routes.luau](src/Http/Routes.luau): Central route registry.
+- [src/Internal/MemoryStoreAdapter.luau](src/Internal/MemoryStoreAdapter.luau): Cross-server lease primitive.
+- [src/Logging/Redaction.luau](src/Logging/Redaction.luau): Secret redaction for logs.

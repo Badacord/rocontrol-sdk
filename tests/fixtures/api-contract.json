@@ -1,0 +1,10 @@
+{
+  "_note": "Shared request/response contract fixtures for the SDK <-> backend boundary. Consumed by both repos to keep the wire format in sync. Expanded in Phases 2/4.",
+  "protocolVersion": "sdk-v1",
+  "routes": {
+    "registerSchedule": { "method": "POST", "path": "/api/sdk/v1/schedules" },
+    "reportEvent": { "method": "POST", "path": "/api/sdk/v1/events" },
+    "health": { "method": "GET", "path": "/api/sdk/v1/health" }
+  },
+  "examples": []
+}

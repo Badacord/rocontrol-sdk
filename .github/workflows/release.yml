@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain (rokit)
+        uses: CompeyDev/setup-rokit@v0.1.2
+
+      - name: Install dependencies
+        run: wally install
+
+      - name: Verify tag matches Metadata.version
+        run: lune run scripts/check-version.luau "${GITHUB_REF_NAME}"
+
+      - name: Lint, format, test
+        run: |
+          stylua --check src tests examples
+          selene src tests examples
+          lune run tests/run.luau
+
+      - name: Build artifacts
+        run: |
+          mkdir -p build
+          rojo build default.project.json --output build/RoControl.rbxm
+          rojo build default.project.json --output build/RoControl.rbxmx
+          rojo sourcemap default.project.json --output build/sourcemap.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/RoControl.rbxm
+            build/RoControl.rbxmx
+            build/sourcemap.json
+          generate_release_notes: true
+
+      - name: Publish to Wally
+        env:
+          WALLY_TOKEN: ${{ secrets.WALLY_TOKEN }}
+        run: |
+          wally login --token "$WALLY_TOKEN"
+          wally publish

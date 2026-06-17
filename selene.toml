@@ -1,0 +1,7 @@
+std = "roblox+lune"
+
+# The SDK touches Roblox engine APIs only through thin adapters in src/Internal.
+# Everything else is pure Luau so it can run under Lune in CI.
+[rules]
+global_usage = "allow"
+incorrect_standard_library_use = "warn"

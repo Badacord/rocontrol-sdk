@@ -12,6 +12,7 @@
 
 local Types = require(script.Parent.Types)
 local Runtime = require(script.Parent.Runtime)
+local Schedules = require(script.Parent.Schedules)
 local Metrics = require(script.Parent.Metrics.Metrics)
 local ErrorFactory = require(script.Parent.Errors)
 local Uuid = require(script.Parent.Internal.Uuid)
@@ -33,22 +34,6 @@ local FLUSH_TIMEOUT_SECONDS = 8
 
 local function normalizeKey(key: string): string
 	return (string.gsub(string.lower(key), "%s+", "-"))
-end
-
--- Phase 1 placeholder hash. Stable for identical descriptors so coalescing and
--- idempotency behave; replaced by canonical-JSON hashing in Phase 2.
-local function placeholderScheduleHash(descriptor: RoControlSchedule): string
-	local parts = {
-		descriptor.key,
-		tostring(descriptor.cycleSeconds),
-		tostring(descriptor.eventDurationSeconds),
-		descriptor.rotation.kind,
-		tostring(#descriptor.events),
-	}
-	for _, event in ipairs(descriptor.events) do
-		table.insert(parts, event.key .. "@" .. tostring(event.priority or 0))
-	end
-	return table.concat(parts, "|")
 end
 
 function Client.new(resolvedConfig: any, overrides: Runtime.Overrides?): RoControlClient
@@ -158,14 +143,14 @@ function Client._dispatch(
 end
 
 function Client.registerSchedule(self: any, descriptor: RoControlSchedule): OperationResult
-	if type(descriptor) ~= "table" or type(descriptor.key) ~= "string" or descriptor.key == "" then
-		return { ok = false, status = "failed", error = ErrorFactory.validation("schedule.key is required") }
-	end
-	if type(descriptor.events) ~= "table" or #descriptor.events == 0 then
-		return { ok = false, status = "failed", error = ErrorFactory.validation("schedule.events must be non-empty") }
+	-- Validate + normalize + canonical-hash. The normalized descriptor (defaults
+	-- filled, asset ids/keys normalized) is what we hash and send, so the hash is
+	-- stable and reproducible by the backend.
+	local hash, normalized, err = Schedules.hashOf(descriptor)
+	if err ~= nil or hash == nil then
+		return { ok = false, status = "failed", error = err }
 	end
 
-	local hash = placeholderScheduleHash(descriptor)
 	if self._sentScheduleHashes[hash] then
 		-- Identical schedule already registered this server session; coalesce.
 		return { ok = true, status = "duplicate" }
@@ -181,7 +166,7 @@ function Client.registerSchedule(self: any, descriptor: RoControlSchedule): Oper
 		jobId = env.jobId,
 		isStudio = env.isStudio,
 		scheduleHash = hash,
-		descriptor = descriptor,
+		descriptor = normalized,
 	}
 	-- Universe is derived server-side from the API key; we only contribute the hash.
 	local idempotencyKey = "schedule:" .. hash .. ":" .. tostring(env.placeVersion)
@@ -238,29 +223,11 @@ function Client.reportEvent(self: any, input: ReportEventInput): OperationResult
 	)
 end
 
--- Convenience scan: builds a schedule descriptor from a folder of event modules /
--- instances. Phase 1 reads `IconAssetId`/`Priority` attributes; Phase 2 enriches.
+-- Convenience scan: builds a schedule descriptor from a folder of event
+-- instances/modules (reads `IconAssetId`/`Priority` attributes). The result is
+-- validated/normalized when passed to `registerSchedule`.
 function Client.buildScheduleFromRegistry(self: any, config: RegistryScanConfig): RoControlSchedule
-	assert(typeof(config.folder) == "Instance", "RegistryScanConfig.folder must be an Instance")
-	local duration = config.defaultDurationSeconds or 300
-	local events = {}
-	for _, child in ipairs(config.folder:GetChildren()) do
-		local iconAssetId = config.readAttributes ~= false and child:GetAttribute("IconAssetId") or nil
-		table.insert(events, {
-			key = child.Name,
-			iconAssetId = if iconAssetId ~= nil then tostring(iconAssetId) else nil,
-			durationSeconds = duration,
-			priority = config.defaultPriority,
-		})
-	end
-	return {
-		key = config.folder.Name,
-		timezone = "UTC",
-		cycleSeconds = math.max(duration, #events * duration),
-		eventDurationSeconds = duration,
-		rotation = { kind = "sequential" },
-		events = events,
-	}
+	return Schedules.buildFromRegistry(config)
 end
 
 function Client.onFailedOperation(self: any, callback: (FailedOperation) -> ()): RBXScriptConnection

@@ -13,6 +13,9 @@ local specs = {
 	require("./unit/CircuitBreaker.spec"),
 	require("./unit/Queue.spec"),
 	require("./unit/Redaction.spec"),
+	require("./unit/Hash.spec"),
+	require("./unit/CanonicalJson.spec"),
+	require("./unit/Sequential.spec"),
 }
 
 local t = Harness.new()

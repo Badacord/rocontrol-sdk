@@ -8,6 +8,23 @@ The SDK package version and the wire `protocolVersion` are tracked separately.
 
 ## [Unreleased]
 
+### Added — Phase 2 (declarative schedules)
+
+- Canonical JSON serializer (sorted keys, integer-only, cross-language stable).
+- Portable 32-bit hashing: FNV-1a (matches canonical reference vectors) rendered
+  as 8 hex chars; content hash = schedule version.
+- Deterministic rotation: `sequential` and portable `weighted`
+  (`mulberry32-fnv1a32`, reproducible by the TypeScript backend — not Roblox
+  `Random.new`).
+- Schedule validation + normalization (defaults, asset-id/key normalization,
+  integer enforcement) and occurrence computation (`stateAt`) mirroring the
+  backend resolver.
+- Registry-scan and adapter helpers.
+- `registerSchedule` now validates, normalizes, and canonical-hashes; coalesces
+  identical schedules; sends the normalized descriptor.
+- Golden fixtures for canonicalization and weighted selection; 15 new pure-logic
+  tests (35 total, all green).
+
 ### Added — Phase 1 (foundation & transport)
 
 - Public entry point `RoControl.init(config)` with server-only guard and full type

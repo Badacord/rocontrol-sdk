@@ -1,4 +1,16 @@
 {
-  "_note": "Filled in Phase 2. Each case: an input RoControlSchedule plus its expected canonical JSON string and content hash, verified identically in Luau and TypeScript.",
-  "cases": []
+  "_note": "Authoritative cross-language vectors. The backend's canonical-JSON encoder + FNV-1a (32-bit) hash MUST reproduce these byte-for-byte. Input objects are already-normalized values; 'canonical' is CanonicalJson.encode(input); 'hash' is Hash.ofString(canonical).",
+  "algorithm": "canonical-json + fnv1a32 (8 hex)",
+  "cases": [
+    {
+      "input": { "b": 1, "a": 2, "arr": [3, 2, 1] },
+      "canonical": "{\"a\":2,\"arr\":[3,2,1],\"b\":1}",
+      "hash": "0ac0d310"
+    },
+    {
+      "input": { "key": "world-events", "events": [{ "key": "Lava", "weight": 3 }] },
+      "canonical": "{\"events\":[{\"key\":\"Lava\",\"weight\":3}],\"key\":\"world-events\"}",
+      "hash": "a1804e6f"
+    }
+  ]
 }

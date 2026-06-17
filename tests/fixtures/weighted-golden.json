@@ -1,5 +1,24 @@
 {
-  "_note": "Filled in Phase 2. Golden vectors for the mulberry32-fnv1a32 weighted rotation: given (scheduleHash, cycleIndex, events[]), the chosen event key. Must match between the Luau SDK and the TypeScript backend.",
+  "_note": "Authoritative cross-language vectors for mulberry32-fnv1a32. The backend MUST reproduce these. fnv1a32 are canonical FNV-1a reference values; mulberrySequence is mulberry32(fnv1a32('seed')) sampled; pickIndex is the 1-based weighted selection for each cycle index.",
   "algorithm": "mulberry32-fnv1a32",
-  "cases": []
+  "fnv1a32": {
+    "": 2166136261,
+    "a": 3826002220,
+    "abc": 440920331
+  },
+  "mulberrySequence": {
+    "seedString": "seed",
+    "values": [
+      0.9498909888789058,
+      0.0760880485177040,
+      0.0262593005318195,
+      0.6270247972570360,
+      0.0932085867971182
+    ]
+  },
+  "pickIndex": {
+    "scheduleHash": "deadbeef",
+    "weights": [3, 3, 3, 1],
+    "byCycleIndex": [2, 3, 3, 4, 3, 1, 1, 3, 1, 2]
+  }
 }

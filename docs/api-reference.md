@@ -34,12 +34,43 @@ calling from the client errors.
 | `buildScheduleFromRegistry(config)` | `RoControlSchedule` | Build a descriptor by scanning a folder. |
 | `onFailedOperation(cb)` | `RBXScriptConnection` | Fires on dispatch/network failure. |
 | `retryFailedOperation(failed)` | `OperationResult` | Re-dispatch a failed operation. |
+| `getUpcomingEvents()` | `UpcomingEventsResult` | **Yields.** Reads the universe's upcoming Roblox virtual events from the backend. Never raises. |
+| `getNextEvent()` | `RoControlUpcomingEvent?` | **Yields.** Convenience: the soonest not-yet-started event (or an active one), else `nil`. |
 | `getHealth()` | `HealthStatus` | Circuit state, pending count, timestamps. |
 | `flush()` | `()` | Bounded wait until pending work drains. |
 | `destroy()` | `()` | Stop accepting work; flush; release resources. |
 
 `OperationResult.status` is one of
 `sent | queued | skipped | duplicate | disabled | failed | circuit_open`.
+
+## Upcoming events — `UpcomingEventsResult`
+
+```lua
+{
+  ok: boolean,
+  events: { RoControlUpcomingEvent }?, -- always present (possibly empty) when ok
+  active: RoControlUpcomingEvent?,      -- the event running right now
+  nextEvent: RoControlUpcomingEvent?,   -- soonest not-yet-started event
+  serverTime: string?,                  -- backend clock (ISO 8601)
+  sourceError: string?,                 -- set if the Roblox feed could not be read
+  error: RoControlError?,               -- set when ok == false
+}
+```
+
+```lua
+-- RoControlUpcomingEvent
+{
+  id: string, title: string,
+  startUtc: string, endUtc: string?, status: string?, imageUrl: string?,
+  startsInSeconds: number?, -- relative to backend clock; negative once started
+  active: boolean,
+}
+```
+
+`getUpcomingEvents()` and `getNextEvent()` yield on the HTTP round-trip — call
+them from a spawned thread, never on a hot path. Any valid SDK API key works (no
+extra scope). Results are cached server-side (~30s) so player traffic never
+hammers the Roblox feed.
 
 ## Errors — `RoControlError`
 
@@ -56,5 +87,5 @@ Retry policy: `Auth`/`Validation`/`Config` never retry; `RateLimit` (honors
 ## Metrics
 
 Emitted through `MetricsSink` if provided. Names are namespaced `rocontrol.sdk.*`
-(init, schedule.register.\*, event.report.\*, http.retry, lease.\*, circuit.\*,
-queue.\*). See `src/Metrics/Metrics.luau`.
+(init, schedule.register.\*, event.report.\*, event.upcoming.\*, http.retry,
+lease.\*, circuit.\*, queue.\*). See `src/Metrics/Metrics.luau`.

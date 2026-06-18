@@ -332,6 +332,74 @@ function Client.retryFailedOperation(self: any, failed: any): OperationResult
 	)
 end
 
+-- Synchronous (yielding) read of the universe's upcoming Roblox virtual events.
+-- Unlike registerSchedule/reportEvent (fire-and-forget through the queue), the
+-- caller needs the data back, so this blocks on the HTTP round-trip. Call it
+-- from a non-critical thread (e.g. a `task.spawn` after some gameplay), never on
+-- a hot path. Network failures return `{ ok = false, error = ... }` rather than
+-- raising, so a down backend can never crash gameplay code.
+function Client.getUpcomingEvents(self: any): Types.UpcomingEventsResult
+	local runtime = self._runtime
+	if self._destroyed then
+		return {
+			ok = false,
+			error = ErrorFactory.config("client has been destroyed"),
+		}
+	end
+
+	runtime.metrics:count(Metrics.Names.upcomingFetchAttempt)
+	local requestId = Uuid.requestId()
+	local ok, result = pcall(function()
+		return runtime.http:send("upcomingEvents", nil, { requestId = requestId })
+	end)
+
+	if not ok then
+		self._lastFailureAt = runtime.clock:now()
+		runtime.metrics:count(Metrics.Names.upcomingFetchFailure)
+		return {
+			ok = false,
+			error = ErrorFactory.new("Unknown", "Read crashed: " .. tostring(result)),
+		}
+	end
+
+	if not result.ok then
+		self._lastFailureAt = runtime.clock:now()
+		runtime.metrics:count(Metrics.Names.upcomingFetchFailure)
+		return { ok = false, error = result.error }
+	end
+
+	self._lastSuccessAt = runtime.clock:now()
+	runtime.metrics:count(Metrics.Names.upcomingFetchSuccess)
+
+	local body = result.body
+	if type(body) ~= "table" then
+		return {
+			ok = false,
+			error = ErrorFactory.new("Server", "Malformed upcoming-events response"),
+		}
+	end
+
+	return {
+		ok = true,
+		events = (body.events :: any) or {},
+		active = body.active,
+		-- Backend names the field `next`; expose it as `nextEvent` (Luau keyword).
+		nextEvent = body.next,
+		serverTime = body.serverTime,
+		sourceError = body.sourceError,
+	}
+end
+
+-- Convenience: the soonest event that hasn't started yet (the one to advertise),
+-- falling back to a currently-active event, or nil if none / on failure.
+function Client.getNextEvent(self: any): Types.RoControlUpcomingEvent?
+	local result = self:getUpcomingEvents()
+	if not result.ok then
+		return nil
+	end
+	return result.nextEvent or result.active
+end
+
 function Client.getHealth(self: any)
 	local now = self._runtime.clock:now()
 	return {

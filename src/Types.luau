@@ -136,6 +136,35 @@ export type RegistryScanConfig = {
 	readAttributes: boolean?,
 }
 
+-- A Roblox virtual event for this universe, as served by the backend. The game
+-- can't read this feed itself, so the SDK relays it. `startsInSeconds` is
+-- computed against the backend clock (negative once the event has started),
+-- and `active` is true while the event is currently running.
+export type RoControlUpcomingEvent = {
+	id: string,
+	title: string,
+	startUtc: string,
+	endUtc: string?,
+	status: string?,
+	imageUrl: string?,
+	startsInSeconds: number?,
+	active: boolean,
+}
+
+-- Result of a synchronous (yielding) read. `ok == false` carries an error and
+-- the other fields are nil; `ok == true` always has an `events` array (possibly
+-- empty). `active` is the event running right now, `nextEvent` the soonest one
+-- that hasn't started yet.
+export type UpcomingEventsResult = {
+	ok: boolean,
+	events: { RoControlUpcomingEvent }?,
+	active: RoControlUpcomingEvent?,
+	nextEvent: RoControlUpcomingEvent?,
+	serverTime: string?,
+	sourceError: string?,
+	error: RoControlError?,
+}
+
 export type RoControlClient = {
 	registerSchedule: (self: RoControlClient, descriptor: RoControlSchedule) -> OperationResult,
 	reportEvent: (self: RoControlClient, input: ReportEventInput) -> OperationResult,
@@ -148,6 +177,8 @@ export type RoControlClient = {
 		callback: (failed: FailedOperation) -> ()
 	) -> RBXScriptConnection,
 	retryFailedOperation: (self: RoControlClient, failed: FailedOperation) -> OperationResult,
+	getUpcomingEvents: (self: RoControlClient) -> UpcomingEventsResult,
+	getNextEvent: (self: RoControlClient) -> RoControlUpcomingEvent?,
 	getHealth: (self: RoControlClient) -> HealthStatus,
 	flush: (self: RoControlClient) -> (),
 	destroy: (self: RoControlClient) -> (),

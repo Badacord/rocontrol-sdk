@@ -23,6 +23,12 @@ local Routes: { [string]: Route } = {
 		idempotent = true,
 		requiredCapability = "event:report",
 	},
+	upcomingEvents = {
+		method = "GET",
+		path = "/api/sdk/v1/events/upcoming",
+		idempotent = true,
+		requiredCapability = nil,
+	},
 	health = {
 		method = "GET",
 		path = "/api/sdk/v1/health",

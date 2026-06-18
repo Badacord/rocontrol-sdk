@@ -12,9 +12,41 @@
       "path": "/api/sdk/v1/events",
       "idempotencyKey": "<derivedUniverseId>:event:<occurrenceId>"
     },
+    "upcomingEvents": { "method": "GET", "path": "/api/sdk/v1/events/upcoming" },
     "health": { "method": "GET", "path": "/api/sdk/v1/health" }
   },
   "responses": {
+    "upcomingEvents": {
+      "ok": true,
+      "requestId": "req_00000000-0000-0000-0000-000000000000",
+      "status": "accepted",
+      "serverTime": "2026-06-17T00:00:00.000Z",
+      "universeId": "0",
+      "events": [
+        {
+          "id": "evt_1",
+          "title": "Summer Bash",
+          "startUtc": "2026-06-17T01:00:00.000Z",
+          "endUtc": "2026-06-17T02:00:00.000Z",
+          "status": "active",
+          "imageUrl": null,
+          "startsInSeconds": 3600,
+          "active": false
+        }
+      ],
+      "active": null,
+      "next": {
+        "id": "evt_1",
+        "title": "Summer Bash",
+        "startUtc": "2026-06-17T01:00:00.000Z",
+        "endUtc": "2026-06-17T02:00:00.000Z",
+        "status": "active",
+        "imageUrl": null,
+        "startsInSeconds": 3600,
+        "active": false
+      },
+      "sourceError": null
+    },
     "ok": {
       "ok": true,
       "requestId": "req_00000000-0000-0000-0000-000000000000",

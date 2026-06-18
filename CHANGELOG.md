@@ -6,6 +6,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The SDK package version and the wire `protocolVersion` are tracked separately.
 
+## [0.2.0] - 2026-06-18
+
+### Added — upcoming-events read API
+
+- `client:getUpcomingEvents()` and `client:getNextEvent()`: synchronous
+  (yielding) reads of the universe's upcoming Roblox virtual events, relayed by
+  the backend (`GET /api/sdk/v1/events/upcoming`). Roblox doesn't expose this
+  feed in-experience; the SDK surfaces it so games can prompt players to join.
+  Any valid SDK key works (no extra scope). Backward compatible.
+- New types `RoControlUpcomingEvent` / `UpcomingEventsResult`, `upcomingEvents`
+  route, and `event.upcoming.*` metrics.
+
 ## [0.1.0] - 2026-06-18
 
 First public release. Phases 1–5 of the SDK plus distribution.

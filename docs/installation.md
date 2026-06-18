@@ -13,7 +13,7 @@
 ```toml
 # wally.toml
 [server-dependencies]
-RoControl = "badacord/rocontrol-roblox-sdk@0.1.0"
+RoControl = "gh-constant/rocontrol-roblox-sdk@0.1.0"
 ```
 
 ```sh

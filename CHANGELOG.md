@@ -12,7 +12,7 @@ First public release. Phases 1–5 of the SDK plus distribution.
 
 ### Added — Phase 6 (distribution)
 
-- Published as the Wally package `badacord/rocontrol-roblox-sdk` and as
+- Published as the Wally package `gh-constant/rocontrol-roblox-sdk` and as
   `RoControl.rbxm` / `RoControl.rbxmx` GitHub release artifacts.
 - Release workflow tolerates a missing `WALLY_TOKEN` (still cuts the GitHub
   release + artifacts; skips the Wally publish step).

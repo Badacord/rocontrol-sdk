@@ -20,7 +20,7 @@ The SDK ships in phases. Each phase is independently useful.
 - **Phase 6 — Distribution polish** ✅
   GitHub release with `.rbxm`/`.rbxmx` artifacts, docs published to GitHub Pages,
   RoControl docs cross-links, publishable Wally coordinates
-  (`badacord/rocontrol-roblox-sdk`). Wally publish runs on tag when a
+  (`gh-constant/rocontrol-roblox-sdk`). Wally publish runs on tag when a
   `WALLY_TOKEN` secret is configured.
 - **Backlog — Studio plugin**
   One-click install into ServerStorage with secret-placement guards.

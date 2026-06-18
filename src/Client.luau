@@ -356,7 +356,10 @@ function Client.getUpcomingEvents(self: any): Types.UpcomingEventsResult
 	if not ok then
 		self._lastFailureAt = runtime.clock:now()
 		runtime.metrics:count(Metrics.Names.upcomingFetchFailure)
-		return { ok = false, error = ErrorFactory.new("Unknown", "Read crashed: " .. tostring(result)) }
+		return {
+			ok = false,
+			error = ErrorFactory.new("Unknown", "Read crashed: " .. tostring(result)),
+		}
 	end
 
 	if not result.ok then
@@ -370,7 +373,10 @@ function Client.getUpcomingEvents(self: any): Types.UpcomingEventsResult
 
 	local body = result.body
 	if type(body) ~= "table" then
-		return { ok = false, error = ErrorFactory.new("Server", "Malformed upcoming-events response") }
+		return {
+			ok = false,
+			error = ErrorFactory.new("Server", "Malformed upcoming-events response"),
+		}
 	end
 
 	return {

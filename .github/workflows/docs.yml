@@ -30,6 +30,9 @@ jobs:
       # GitHub Pages; swap in VitePress/Docusaurus build steps when the docs site
       # gains a generator (tracked in docs/public-roadmap.md).
       - uses: actions/configure-pages@v5
+        with:
+          # Auto-create the Pages site on first run if it isn't enabled yet.
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

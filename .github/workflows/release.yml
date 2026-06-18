@@ -49,5 +49,9 @@ jobs:
         env:
           WALLY_TOKEN: ${{ secrets.WALLY_TOKEN }}
         run: |
+          if [ -z "$WALLY_TOKEN" ]; then
+            echo "WALLY_TOKEN not set — skipping Wally publish. The GitHub release artifacts are still attached."
+            exit 0
+          fi
           wally login --token "$WALLY_TOKEN"
           wally publish

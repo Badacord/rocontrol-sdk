@@ -6,7 +6,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The SDK package version and the wire `protocolVersion` are tracked separately.
 
-## [Unreleased]
+## [0.1.0] - 2026-06-18
+
+First public release. Phases 1–5 of the SDK plus distribution.
+
+### Added — Phase 6 (distribution)
+
+- Published as the Wally package `badacord/rocontrol-roblox-sdk` and as
+  `RoControl.rbxm` / `RoControl.rbxmx` GitHub release artifacts.
+- Release workflow tolerates a missing `WALLY_TOKEN` (still cuts the GitHub
+  release + artifacts; skips the Wally publish step).
 
 ### Added — Phase 5 (asset and moderation surfacing)
 

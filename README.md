@@ -29,7 +29,7 @@ any Roblox experience report events and schedules to RoControl so features like
 ```toml
 # wally.toml
 [server-dependencies]
-RoControl = "rocontrol/rocontrol-roblox-sdk@0.1.0"
+RoControl = "badacord/rocontrol-roblox-sdk@0.1.0"
 ```
 
 ```sh

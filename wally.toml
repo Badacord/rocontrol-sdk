@@ -1,5 +1,5 @@
 [package]
-name = "rocontrol/rocontrol-roblox-sdk"
+name = "badacord/rocontrol-roblox-sdk"
 description = "Official RoControl SDK for Roblox — server-only, typed, production-grade game integration."
 version = "0.1.0"
 license = "Apache-2.0"

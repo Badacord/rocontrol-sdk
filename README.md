@@ -12,9 +12,10 @@ any Roblox experience report events and schedules to RoControl so features like
 - **Two integration modes** — declarative schedules (zero per-occurrence traffic)
   and imperative `reportEvent` for ad-hoc/random events.
 
-> **v1 is server-only.** The SDK holds a privileged API key. Never place it in
-> `ReplicatedStorage`, `StarterPlayer`, `StarterGui`, `Workspace`, or any
-> client-replicated container.
+> **v1 is server-only by use, not by location.** The module installs as a normal
+> package (`ReplicatedStorage.Packages`) and is inert on the client. What stays
+> server-only is your **API key** — keep it in `ServerStorage` and only call
+> `init()` from a server script.
 
 ## Requirements
 
@@ -28,22 +29,24 @@ any Roblox experience report events and schedules to RoControl so features like
 
 ```toml
 # wally.toml
-[server-dependencies]
-RoControl = "gh-constant/rocontrol-roblox-sdk@0.1.0"
+[dependencies]
+RoControl = "gh-constant/rocontrol-roblox-sdk@0.2.1"
 ```
 
 ```sh
 wally install
 ```
 
-Then map `ServerPackages` into `ServerScriptService`/`ServerStorage` in your Rojo
-project so the SDK stays server-side.
+It's a normal `shared` package, so it installs into your usual `Packages` folder
+(typically `ReplicatedStorage.Packages`) — no special Rojo mapping. The SDK is
+inert on the client and `init()` is server-only, so the API key (in
+`ServerStorage`) never reaches clients.
 
 ### Option B — Model file (`.rbxm`)
 
 1. Download `RoControl.rbxm` from the [latest release](https://github.com/Badacord/rocontrol-sdk/releases).
-2. In Studio, right-click **ServerStorage → Insert from File** and pick the model.
-3. Confirm it landed at `ServerStorage/RoControl`.
+2. In Studio, right-click **ReplicatedStorage → Insert from File** and pick the model.
+3. Confirm it lands where the server can require it (e.g. `ReplicatedStorage.Packages.RoControl`).
 
 ### Option C — Source / Rojo
 
@@ -59,10 +62,10 @@ rojo build default.project.json --output RoControl.rbxm
 
 | What | Location |
 | --- | --- |
-| SDK module | `ServerStorage/RoControl` |
-| API key | `ServerStorage/RoControlConfig/ApiKey` (a `StringValue`) |
+| SDK module | `ReplicatedStorage.Packages.RoControl` (normal Wally package) |
+| API key | `ServerStorage/RoControlConfig/ApiKey` (a `StringValue`) — server-only |
 | Bootstrap script | `ServerScriptService/RoControlBootstrap.server.luau` |
-| Client code | **nothing in v1** |
+| Client code | **nothing in v1** (`init()` only runs on the server) |
 
 ## Quickstart
 

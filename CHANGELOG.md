@@ -6,6 +6,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The SDK package version and the wire `protocolVersion` are tracked separately.
 
+## [0.2.1] - 2026-06-18
+
+### Changed
+
+- Wally `realm` is now **`shared`** (was `server`). Install RoControl as a normal
+  `[dependencies]` entry so it lands in `Packages` / `ReplicatedStorage.Packages`
+  like any other Wally package, instead of a separate `ServerPackages` location
+  that Rojo projects don't map by default. The SDK is still effectively
+  server-only: `init()` errors on the client and the module is inert there, so
+  the API key (kept in `ServerStorage`) never reaches clients.
+- Removed the noisy "SDK is under ReplicatedStorage" placement warning — that is
+  now the recommended location. The client-side `init()` guard remains the real
+  protection.
+
 ## [0.2.0] - 2026-06-18
 
 ### Added — upcoming-events read API

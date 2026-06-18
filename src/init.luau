@@ -35,41 +35,8 @@ export type ErrorKind = Types.ErrorKind
 export type FailedOperation = Types.FailedOperation
 export type HealthStatus = Types.HealthStatus
 
-local warnFn: (...any) -> () = (warn :: any) or print
-
 local SERVER_ONLY_MESSAGE =
-	"RoControl SDK API keys are server-only. Move RoControl to ServerStorage or ServerScriptService."
-
--- One-time placement sanity check: secrets must never sit in a replicated container.
-local function checkPlacement()
-	local ok, fullName = pcall(function()
-		return script:GetFullName()
-	end)
-	if not ok then
-		return
-	end
-	local replicatedContainers = {
-		"ReplicatedStorage",
-		"ReplicatedFirst",
-		"StarterPlayer",
-		"StarterGui",
-		"StarterPack",
-		"Workspace",
-	}
-	for _, container in ipairs(replicatedContainers) do
-		if
-			string.find(fullName, "^" .. container) ~= nil
-			or string.find(fullName, "%." .. container .. "%.") ~= nil
-		then
-			warnFn(
-				"[RoControl] SDK appears to be under "
-					.. container
-					.. ". Place it (and your API key) in ServerStorage/ServerScriptService so secrets never replicate to clients."
-			)
-			return
-		end
-	end
-end
+	"RoControl SDK init() must run on the server (it holds your API key). Require and init it from a server script, and keep the API key in ServerStorage."
 
 local env = Env.detect()
 
@@ -85,8 +52,6 @@ if env.isClient and not env.isServer then
 		end,
 	})
 end
-
-checkPlacement()
 
 local RoControl = {
 	name = Metadata.name,

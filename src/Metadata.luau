@@ -5,6 +5,6 @@
 
 return table.freeze({
 	name = "rocontrol-roblox-sdk",
-	version = "0.2.0",
+	version = "0.2.1",
 	protocolVersion = "sdk-v1",
 })

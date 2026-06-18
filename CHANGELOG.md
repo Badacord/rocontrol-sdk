@@ -8,6 +8,13 @@ The SDK package version and the wire `protocolVersion` are tracked separately.
 
 ## [Unreleased]
 
+### Added — Phase 5 (asset and moderation surfacing)
+
+- Added SDK moderation metric names and response handling for backend-returned
+  moderation state (`pending`, `approved`, `rejected`, `failed`).
+- Expanded the SDK/backend API contract fixture with v1 idempotency keys and
+  moderation response examples.
+
 ### Added — Phase 4 (imperative reporting)
 
 - Cross-server single-flight `MemoryStoreLease` (atomic claim on a MemoryStore

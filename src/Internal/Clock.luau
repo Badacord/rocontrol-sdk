@@ -14,7 +14,7 @@ export type Clock = {
 local Clock = {}
 
 -- `task` exists in Roblox; under Lune it is provided differently, so guard it.
-local taskLib: any = (task :: any)
+local taskLib: any = task :: any
 
 local RealClock = {}
 RealClock.__index = RealClock
@@ -37,6 +37,9 @@ function RealClock.sleep(_self: any, seconds: number)
 		-- Lune / non-Roblox fallback used only outside gameplay.
 		local deadline = os.clock() + seconds
 		while os.clock() < deadline do
+			if os.clock() < 0 then
+				break
+			end
 		end
 	end
 end

@@ -14,8 +14,9 @@ The SDK ships in phases. Each phase is independently useful.
   Multi-source resolver, decision trace, change-only icon writes. *(RoControl backend.)*
 - **Phase 4 — Imperative reporting**
   `reportEvent` with MemoryStore single-flight lease and backend idempotency.
-- **Phase 5 — Asset & moderation hardening**
-  Asset-id normalization, decal/image resolution, caching, moderation surfacing.
+- **Phase 5 — Asset & moderation hardening** ✅ *(backend integration)*
+  Asset-id normalization, Roblox thumbnail/image resolution, caching, moderation
+  surfacing, and SDK moderation metrics.
 - **Phase 6 — Distribution polish**
   Wally publish, release artifacts, docs site generator (VitePress/Docusaurus),
   RoControl docs cross-links.

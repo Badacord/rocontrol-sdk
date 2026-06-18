@@ -4,7 +4,10 @@ local CanonicalJson = require("../../src/Schedules/CanonicalJson")
 return function(t: any)
 	t:describe("CanonicalJson.encode", function()
 		t:it("sorts object keys", function()
-			t:eq(CanonicalJson.encode({ b = 1, a = 2, arr = { 3, 2, 1 } }), '{"a":2,"arr":[3,2,1],"b":1}')
+			t:eq(
+				CanonicalJson.encode({ b = 1, a = 2, arr = { 3, 2, 1 } }),
+				'{"a":2,"arr":[3,2,1],"b":1}'
+			)
 		end)
 
 		t:it("preserves array order", function()
@@ -13,7 +16,10 @@ return function(t: any)
 
 		t:it("encodes nested objects deterministically", function()
 			t:eq(
-				CanonicalJson.encode({ key = "world-events", events = { { key = "Lava", weight = 3 } } }),
+				CanonicalJson.encode({
+					key = "world-events",
+					events = { { key = "Lava", weight = 3 } },
+				}),
 				'{"events":[{"key":"Lava","weight":3}],"key":"world-events"}'
 			)
 		end)

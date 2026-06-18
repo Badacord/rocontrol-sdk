@@ -16,7 +16,9 @@ return function(t: any)
 		end)
 
 		t:it("masks nested sensitive keys", function()
-			local out = Redaction.redact({ headers = { authorization = "Bearer x", ["content-type"] = "json" } })
+			local out = Redaction.redact({
+				headers = { authorization = "Bearer x", ["content-type"] = "json" },
+			})
 			t:eq(out.headers.authorization, "[REDACTED]")
 			t:eq(out.headers["content-type"], "json")
 		end)

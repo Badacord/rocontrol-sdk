@@ -37,7 +37,7 @@ export type Overrides = {
 -- Default async scheduler: prefer task.spawn, then task.defer, else run inline
 -- (used under non-Roblox harnesses; tests usually inject a synchronous scheduler).
 local function defaultScheduler(): (() -> ()) -> ()
-	local taskLib: any = (task :: any)
+	local taskLib: any = task :: any
 	if taskLib ~= nil and taskLib.spawn ~= nil then
 		return function(fn)
 			taskLib.spawn(fn)

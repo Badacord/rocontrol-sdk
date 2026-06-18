@@ -32,7 +32,11 @@ export type NewErrorOptions = {
 	retryable: boolean?,
 }
 
-function ErrorFactory.new(kind: ErrorKind, message: string, options: NewErrorOptions?): RoControlError
+function ErrorFactory.new(
+	kind: ErrorKind,
+	message: string,
+	options: NewErrorOptions?
+): RoControlError
 	local opts = options or {}
 	local retryable = opts.retryable
 	if retryable == nil then

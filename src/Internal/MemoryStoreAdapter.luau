@@ -6,7 +6,12 @@
 export type HashMapAdapter = {
 	-- Atomic compare-and-set against a key. `transform(old)` returns the new value
 	-- (or nil to leave unchanged). Returns the stored value after the update.
-	updateAsync: (self: HashMapAdapter, key: string, ttlSeconds: number, transform: (any) -> any) -> any,
+	updateAsync: (
+		self: HashMapAdapter,
+		key: string,
+		ttlSeconds: number,
+		transform: (any) -> any
+	) -> any,
 	getAsync: (self: HashMapAdapter, key: string) -> any,
 }
 
@@ -25,7 +30,12 @@ function HashMapImpl.new(raw: any)
 	return setmetatable({ _raw = raw }, HashMapImpl)
 end
 
-function HashMapImpl.updateAsync(self: any, key: string, ttlSeconds: number, transform: (any) -> any): any
+function HashMapImpl.updateAsync(
+	self: any,
+	key: string,
+	ttlSeconds: number,
+	transform: (any) -> any
+): any
 	return self._raw:UpdateAsync(key, transform, ttlSeconds)
 end
 

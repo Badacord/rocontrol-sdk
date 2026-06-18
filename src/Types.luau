@@ -14,7 +14,12 @@ export type Logger = {
 
 export type MetricsSink = {
 	count: (self: MetricsSink, name: string, value: number?, tags: { [string]: string }?) -> (),
-	timing: (self: MetricsSink, name: string, milliseconds: number, tags: { [string]: string }?) -> (),
+	timing: (
+		self: MetricsSink,
+		name: string,
+		milliseconds: number,
+		tags: { [string]: string }?
+	) -> (),
 }
 
 export type InitConfig = {
@@ -134,8 +139,14 @@ export type RegistryScanConfig = {
 export type RoControlClient = {
 	registerSchedule: (self: RoControlClient, descriptor: RoControlSchedule) -> OperationResult,
 	reportEvent: (self: RoControlClient, input: ReportEventInput) -> OperationResult,
-	buildScheduleFromRegistry: (self: RoControlClient, config: RegistryScanConfig) -> RoControlSchedule,
-	onFailedOperation: (self: RoControlClient, callback: (failed: FailedOperation) -> ()) -> RBXScriptConnection,
+	buildScheduleFromRegistry: (
+		self: RoControlClient,
+		config: RegistryScanConfig
+	) -> RoControlSchedule,
+	onFailedOperation: (
+		self: RoControlClient,
+		callback: (failed: FailedOperation) -> ()
+	) -> RBXScriptConnection,
 	retryFailedOperation: (self: RoControlClient, failed: FailedOperation) -> OperationResult,
 	getHealth: (self: RoControlClient) -> HealthStatus,
 	flush: (self: RoControlClient) -> (),

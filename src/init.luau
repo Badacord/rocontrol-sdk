@@ -46,9 +46,19 @@ local function checkPlacement()
 	if not ok then
 		return
 	end
-	local replicatedContainers = { "ReplicatedStorage", "ReplicatedFirst", "StarterPlayer", "StarterGui", "StarterPack", "Workspace" }
+	local replicatedContainers = {
+		"ReplicatedStorage",
+		"ReplicatedFirst",
+		"StarterPlayer",
+		"StarterGui",
+		"StarterPack",
+		"Workspace",
+	}
 	for _, container in ipairs(replicatedContainers) do
-		if string.find(fullName, "^" .. container) ~= nil or string.find(fullName, "%." .. container .. "%.") ~= nil then
+		if
+			string.find(fullName, "^" .. container) ~= nil
+			or string.find(fullName, "%." .. container .. "%.") ~= nil
+		then
 			warnFn(
 				"[RoControl] SDK appears to be under "
 					.. container
@@ -99,7 +109,10 @@ end
 
 -- Test seam: build a client with injected fakes (adapter/clock/env/etc.).
 -- Not part of the supported public API; used by the SDK's own test suite.
-function RoControl._initWithOverrides(config: Types.InitConfig, overrides: any): Types.RoControlClient
+function RoControl._initWithOverrides(
+	config: Types.InitConfig,
+	overrides: any
+): Types.RoControlClient
 	local resolved, err = Config.resolve(config)
 	if err ~= nil or resolved == nil then
 		local message = if err ~= nil then err.message else "invalid configuration"

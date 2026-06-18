@@ -17,7 +17,11 @@ local DEFAULT_WEIGHT = 1
 local WEIGHTED_ALGORITHM = "mulberry32-fnv1a32"
 
 local function isInteger(value: any): boolean
-	return type(value) == "number" and value == value and value ~= math.huge and value ~= -math.huge and math.floor(value) == value
+	return type(value) == "number"
+		and value == value
+		and value ~= math.huge
+		and value ~= -math.huge
+		and math.floor(value) == value
 end
 
 -- Accepts 123, "123", "rbxassetid://123". Returns canonical "rbxassetid://123".
@@ -32,7 +36,8 @@ function Validators.normalizeAssetId(value: any): (string?, string?)
 		return string.format("rbxassetid://%d", value), nil
 	end
 	if type(value) == "string" then
-		local digits = string.match(value, "^%s*rbxassetid://(%d+)%s*$") or string.match(value, "^%s*(%d+)%s*$")
+		local digits = string.match(value, "^%s*rbxassetid://(%d+)%s*$")
+			or string.match(value, "^%s*(%d+)%s*$")
 		if digits == nil then
 			return nil, "iconAssetId string must be digits or rbxassetid://<digits>"
 		end
@@ -96,13 +101,14 @@ function Validators.validateAndNormalize(descriptor: any): (any?, RoControlError
 		return nil, ErrorFactory.validation("schedule.key must be a non-empty string")
 	end
 	if descriptor.timezone ~= nil and descriptor.timezone ~= "UTC" then
-		return nil, ErrorFactory.validation("schedule.timezone must be \"UTC\"")
+		return nil, ErrorFactory.validation('schedule.timezone must be "UTC"')
 	end
 	if not isInteger(descriptor.cycleSeconds) or descriptor.cycleSeconds <= 0 then
 		return nil, ErrorFactory.validation("schedule.cycleSeconds must be a positive integer")
 	end
 	if not isInteger(descriptor.eventDurationSeconds) or descriptor.eventDurationSeconds <= 0 then
-		return nil, ErrorFactory.validation("schedule.eventDurationSeconds must be a positive integer")
+		return nil,
+			ErrorFactory.validation("schedule.eventDurationSeconds must be a positive integer")
 	end
 	if descriptor.eventDurationSeconds > descriptor.cycleSeconds then
 		return nil, ErrorFactory.validation("schedule.eventDurationSeconds must be <= cycleSeconds")
@@ -121,11 +127,15 @@ function Validators.validateAndNormalize(descriptor: any): (any?, RoControlError
 		normalizedRotation = { kind = "sequential" }
 	elseif rotation.kind == "weighted" then
 		if rotation.algorithm ~= WEIGHTED_ALGORITHM then
-			return nil, ErrorFactory.validation("weighted rotation requires algorithm \"" .. WEIGHTED_ALGORITHM .. "\"")
+			return nil,
+				ErrorFactory.validation(
+					'weighted rotation requires algorithm "' .. WEIGHTED_ALGORITHM .. '"'
+				)
 		end
 		normalizedRotation = { kind = "weighted", algorithm = WEIGHTED_ALGORITHM }
 	else
-		return nil, ErrorFactory.validation("schedule.rotation.kind must be \"sequential\" or \"weighted\"")
+		return nil,
+			ErrorFactory.validation('schedule.rotation.kind must be "sequential" or "weighted"')
 	end
 
 	if type(descriptor.events) ~= "table" or #descriptor.events == 0 then
@@ -136,7 +146,8 @@ function Validators.validateAndNormalize(descriptor: any): (any?, RoControlError
 	for index, rawEvent in ipairs(descriptor.events) do
 		local normalized, err = normalizeEvent(rawEvent, descriptor.eventDurationSeconds)
 		if err ~= nil then
-			return nil, ErrorFactory.validation(string.format("schedule.events[%d]: %s", index, err))
+			return nil,
+				ErrorFactory.validation(string.format("schedule.events[%d]: %s", index, err))
 		end
 		table.insert(events, normalized)
 	end

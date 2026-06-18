@@ -37,6 +37,9 @@ on backend idempotency. No action needed; reports are still de-duplicated.
 Icon changes pass Roblox moderation. RoControl only re-submits when the winning
 overlay actually changes, and surfaces moderation status in the dashboard. If an
 icon is rejected, fix the asset; RoControl will not loop on a known-bad composite.
+The SDK also emits `rocontrol.sdk.moderation.pending`,
+`rocontrol.sdk.moderation.approved`, `rocontrol.sdk.moderation.rejected`, and
+`rocontrol.sdk.moderation.failed` when the backend returns moderation state.
 
 ## Nothing appears in the dashboard
 

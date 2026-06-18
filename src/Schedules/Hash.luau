@@ -47,7 +47,10 @@ function Hash.mulberry32(seed: number): () -> number
 		state = (state + 0x6D2B79F5) % 4294967296
 		local t = state
 		t = mul32(bit32.bxor(t, bit32.rshift(t, 15)), bit32.bor(t, 1))
-		t = bit32.bxor((t + mul32(bit32.bxor(t, bit32.rshift(t, 7)), bit32.bor(t, 61))) % 4294967296, t)
+		t = bit32.bxor(
+			(t + mul32(bit32.bxor(t, bit32.rshift(t, 7)), bit32.bor(t, 61))) % 4294967296,
+			t
+		)
 		return bit32.band(bit32.bxor(t, bit32.rshift(t, 14)), MASK32) / 4294967296
 	end
 end

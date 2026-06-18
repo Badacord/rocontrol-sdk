@@ -26,6 +26,10 @@ Metrics.Names = table.freeze({
 	circuitClose = "rocontrol.sdk.circuit.close",
 	queueEnqueued = "rocontrol.sdk.queue.enqueued",
 	queueDropped = "rocontrol.sdk.queue.dropped",
+	moderationPending = "rocontrol.sdk.moderation.pending",
+	moderationApproved = "rocontrol.sdk.moderation.approved",
+	moderationRejected = "rocontrol.sdk.moderation.rejected",
+	moderationFailed = "rocontrol.sdk.moderation.failed",
 })
 
 export type Metrics = {

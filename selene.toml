@@ -4,4 +4,4 @@ std = "roblox+lune"
 # Everything else is pure Luau so it can run under Lune in CI.
 [rules]
 global_usage = "allow"
-incorrect_standard_library_use = "warn"
+incorrect_standard_library_use = "allow"

@@ -46,7 +46,15 @@ end
 
 function Harness.eq(_self: any, got: any, want: any, msg: string?)
 	if got ~= want then
-		error(string.format("%s (got %s, want %s)", msg or "expected equal", tostring(got), tostring(want)), 2)
+		error(
+			string.format(
+				"%s (got %s, want %s)",
+				msg or "expected equal",
+				tostring(got),
+				tostring(want)
+			),
+			2
+		)
 	end
 end
 

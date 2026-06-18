@@ -34,6 +34,7 @@ Client.__index = Client
 local MAX_PENDING = 64
 local FLUSH_STEP_SECONDS = 0.05
 local FLUSH_TIMEOUT_SECONDS = 8
+local emitModerationMetric: (Metrics.Metrics, any) -> ()
 
 function Client.new(resolvedConfig: any, overrides: Runtime.Overrides?): RoControlClient
 	local runtime = Runtime.create(resolvedConfig, overrides)
@@ -79,7 +80,8 @@ function Client._dispatch(
 
 	if self._pending >= MAX_PENDING then
 		runtime.metrics:count(Metrics.Names.queueDropped, 1, { operation = operation })
-		local err = ErrorFactory.new("Transport", "SDK pending queue is full", { retryable = false })
+		local err =
+			ErrorFactory.new("Transport", "SDK pending queue is full", { retryable = false })
 		runtime.failedSignal:fire({
 			operation = operation,
 			status = "dropped",
@@ -122,6 +124,7 @@ function Client._dispatch(
 		if result.ok then
 			self._lastSuccessAt = runtime.clock:now()
 			runtime.metrics:count(successMetric)
+			emitModerationMetric(runtime.metrics, result.body)
 		else
 			self._lastFailureAt = runtime.clock:now()
 			runtime.metrics:count(failureMetric)
@@ -139,6 +142,22 @@ function Client._dispatch(
 	end)
 
 	return { ok = true, status = "queued", requestId = requestId }
+end
+
+emitModerationMetric = function(metrics: Metrics.Metrics, body: any)
+	if type(body) ~= "table" or type(body.moderation) ~= "table" then
+		return
+	end
+	local status = body.moderation.status
+	if status == "pending" then
+		metrics:count(Metrics.Names.moderationPending)
+	elseif status == "approved" then
+		metrics:count(Metrics.Names.moderationApproved)
+	elseif status == "rejected" then
+		metrics:count(Metrics.Names.moderationRejected)
+	elseif status == "failed" then
+		metrics:count(Metrics.Names.moderationFailed)
+	end
 end
 
 function Client.registerSchedule(self: any, descriptor: RoControlSchedule): OperationResult
@@ -183,7 +202,11 @@ end
 
 function Client.reportEvent(self: any, input: ReportEventInput): OperationResult
 	if type(input) ~= "table" or type(input.key) ~= "string" or input.key == "" then
-		return { ok = false, status = "failed", error = ErrorFactory.validation("event.key is required") }
+		return {
+			ok = false,
+			status = "failed",
+			error = ErrorFactory.validation("event.key is required"),
+		}
 	end
 
 	local runtime = self._runtime
@@ -211,7 +234,10 @@ function Client.reportEvent(self: any, input: ReportEventInput): OperationResult
 		else
 			-- MemoryStore unavailable: degrade to per-server debounce.
 			runtime.metrics:count(Metrics.Names.leaseError)
-			runtime.logger:warn("lease unavailable; using local debounce", { event = "lease_unavailable" })
+			runtime.logger:warn(
+				"lease unavailable; using local debounce",
+				{ event = "lease_unavailable" }
+			)
 			if not runtime.localDebounce:shouldSend(occurrenceId, now, ttl) then
 				return { ok = true, status = "duplicate" }
 			end
@@ -256,7 +282,7 @@ end
 -- Convenience scan: builds a schedule descriptor from a folder of event
 -- instances/modules (reads `IconAssetId`/`Priority` attributes). The result is
 -- validated/normalized when passed to `registerSchedule`.
-function Client.buildScheduleFromRegistry(self: any, config: RegistryScanConfig): RoControlSchedule
+function Client.buildScheduleFromRegistry(_self: any, config: RegistryScanConfig): RoControlSchedule
 	return Schedules.buildFromRegistry(config)
 end
 
@@ -266,13 +292,19 @@ end
 
 function Client.retryFailedOperation(self: any, failed: any): OperationResult
 	if self._destroyed then
-		return { ok = false, status = "disabled", error = ErrorFactory.config("client has been destroyed") }
+		return {
+			ok = false,
+			status = "disabled",
+			error = ErrorFactory.config("client has been destroyed"),
+		}
 	end
 	if type(failed) ~= "table" or failed._route == nil or failed._payload == nil then
 		return {
 			ok = false,
 			status = "failed",
-			error = ErrorFactory.validation("retryFailedOperation requires a FailedOperation from onFailedOperation"),
+			error = ErrorFactory.validation(
+				"retryFailedOperation requires a FailedOperation from onFailedOperation"
+			),
 		}
 	end
 
@@ -283,7 +315,11 @@ function Client.retryFailedOperation(self: any, failed: any): OperationResult
 			Metrics.Names.scheduleRegisterFailure,
 			Metrics.Names.scheduleRegisterAttempt,
 		}
-		else { Metrics.Names.eventReportSuccess, Metrics.Names.eventReportFailure, Metrics.Names.eventReportAttempt }
+		else {
+			Metrics.Names.eventReportSuccess,
+			Metrics.Names.eventReportFailure,
+			Metrics.Names.eventReportAttempt,
+		}
 
 	return self:_dispatch(
 		operation,

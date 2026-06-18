@@ -11,7 +11,11 @@ local Hash = require(script.Parent.Hash)
 local WeightedDeterministic = {}
 
 -- Returns a 1-based index into `weights`, chosen by the seeded roll.
-function WeightedDeterministic.pickIndex(scheduleHash: string, cycleIndex: number, weights: { number }): number
+function WeightedDeterministic.pickIndex(
+	scheduleHash: string,
+	cycleIndex: number,
+	weights: { number }
+): number
 	local total = 0
 	for _, weight in ipairs(weights) do
 		total += weight

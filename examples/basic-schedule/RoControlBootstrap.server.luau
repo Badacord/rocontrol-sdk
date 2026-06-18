@@ -13,7 +13,13 @@ local client = RoControl.init({
 })
 
 client:onFailedOperation(function(failed)
-	warn(("[RoControl] %s failed (%s): %s"):format(failed.operation, failed.error.kind, failed.error.message))
+	warn(
+		("[RoControl] %s failed (%s): %s"):format(
+			failed.operation,
+			failed.error.kind,
+			failed.error.message
+		)
+	)
 end)
 
 client:registerSchedule(EventScheduleConfig)

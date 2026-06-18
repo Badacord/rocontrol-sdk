@@ -2,9 +2,36 @@
   "_note": "Shared request/response contract fixtures for the SDK <-> backend boundary. Consumed by both repos to keep the wire format in sync. Expanded in Phases 2/4.",
   "protocolVersion": "sdk-v1",
   "routes": {
-    "registerSchedule": { "method": "POST", "path": "/api/sdk/v1/schedules" },
-    "reportEvent": { "method": "POST", "path": "/api/sdk/v1/events" },
+    "registerSchedule": {
+      "method": "POST",
+      "path": "/api/sdk/v1/schedules",
+      "idempotencyKey": "<derivedUniverseId>:schedule:<scheduleHash>:<placeVersion>"
+    },
+    "reportEvent": {
+      "method": "POST",
+      "path": "/api/sdk/v1/events",
+      "idempotencyKey": "<derivedUniverseId>:event:<occurrenceId>"
+    },
     "health": { "method": "GET", "path": "/api/sdk/v1/health" }
+  },
+  "responses": {
+    "ok": {
+      "ok": true,
+      "requestId": "req_00000000-0000-0000-0000-000000000000",
+      "status": "accepted",
+      "serverTime": "2026-06-17T00:00:00.000Z",
+      "moderation": { "status": "unknown", "message": null }
+    },
+    "eventInvalidAsset": {
+      "ok": true,
+      "requestId": "req_00000000-0000-0000-0000-000000000000",
+      "status": "invalid",
+      "serverTime": "2026-06-17T00:00:00.000Z",
+      "moderation": {
+        "status": "failed",
+        "message": "iconAssetId string must be digits or rbxassetid://<digits>"
+      }
+    }
   },
   "examples": []
 }

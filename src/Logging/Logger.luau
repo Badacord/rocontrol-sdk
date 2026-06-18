@@ -42,10 +42,7 @@ local function mergeFields(base: LogFields?, extra: LogFields?): LogFields?
 	if extra == nil then
 		return base
 	end
-	local out: LogFields = {}
-	for k, v in pairs(base) do
-		out[k] = v
-	end
+	local out: LogFields = table.clone(base)
 	for k, v in pairs(extra) do
 		out[k] = v
 	end

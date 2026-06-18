@@ -67,7 +67,12 @@ function Schedules.eventForCycle(normalized: any, scheduleHash: string, cycleInd
 	return events[index]
 end
 
-local function toOccurrence(event: any, startAt: number, duration: number, cycleIndex: number): OccurrenceEvent
+local function toOccurrence(
+	event: any,
+	startAt: number,
+	duration: number,
+	cycleIndex: number
+): OccurrenceEvent
 	return {
 		eventKey = event.key,
 		iconAssetId = event.iconAssetId,
@@ -95,12 +100,22 @@ function Schedules.stateAt(descriptor: any, nowUnix: number): (ScheduleState?, R
 
 	local current: OccurrenceEvent? = nil
 	if intoCycle >= 0 and intoCycle < duration then
-		current = toOccurrence(Schedules.eventForCycle(normalized, hash, cycleIndex), cycleStart, duration, cycleIndex)
+		current = toOccurrence(
+			Schedules.eventForCycle(normalized, hash, cycleIndex),
+			cycleStart,
+			duration,
+			cycleIndex
+		)
 	end
 
 	local nextIndex = cycleIndex + 1
 	local nextStart = anchor + nextIndex * cycle
-	local nextEvent = toOccurrence(Schedules.eventForCycle(normalized, hash, nextIndex), nextStart, duration, nextIndex)
+	local nextEvent = toOccurrence(
+		Schedules.eventForCycle(normalized, hash, nextIndex),
+		nextStart,
+		duration,
+		nextIndex
+	)
 
 	return {
 		scheduleHash = hash,

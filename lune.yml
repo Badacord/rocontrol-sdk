@@ -1,0 +1,10 @@
+---
+# Selene std shim for the Lune half of `std = "roblox+lune"`.
+# The SDK lint command checks `src tests examples`, which only needs the std name
+# to resolve; Lune-specific release scripts live under `scripts/`.
+base: lua51
+globals:
+  require:
+    args:
+      - type: any
+    must_use: true

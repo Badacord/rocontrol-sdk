@@ -10,7 +10,10 @@ type RoControlEvent = Types.RoControlEvent
 local Adapters = {}
 
 -- Maps an arbitrary list to RoControlEvent[] via `transform`.
-function Adapters.mapEvents<T>(items: { T }, transform: (item: T, index: number) -> RoControlEvent): { RoControlEvent }
+function Adapters.mapEvents<T>(
+	items: { T },
+	transform: (item: T, index: number) -> RoControlEvent
+): { RoControlEvent }
 	local events = table.create(#items)
 	for index, item in ipairs(items) do
 		events[index] = transform(item, index)

@@ -136,7 +136,7 @@ function Config.resolve(input: InitConfig?): (ResolvedConfig?, RoControlError?)
 		return nil, ErrorFactory.config("retryMaxDelaySeconds must be >= retryBaseDelaySeconds")
 	end
 
-	return (resolved :: ResolvedConfig), nil
+	return resolved :: ResolvedConfig, nil
 end
 
 return Config

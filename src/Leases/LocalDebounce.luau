@@ -5,7 +5,12 @@
 -- Dependency-free (unit-tested under luau/lune).
 
 export type LocalDebounce = {
-	shouldSend: (self: LocalDebounce, occurrenceId: string, now: number, ttlSeconds: number) -> boolean,
+	shouldSend: (
+		self: LocalDebounce,
+		occurrenceId: string,
+		now: number,
+		ttlSeconds: number
+	) -> boolean,
 }
 
 local LocalDebounce = {}
@@ -22,7 +27,12 @@ function LocalDebounce.new(): LocalDebounce
 end
 
 -- Returns true at most once per occurrence per TTL window on this server.
-function LocalDebounce.shouldSend(self: any, occurrenceId: string, now: number, ttlSeconds: number): boolean
+function LocalDebounce.shouldSend(
+	self: any,
+	occurrenceId: string,
+	now: number,
+	ttlSeconds: number
+): boolean
 	local expiry = self._seen[occurrenceId]
 	if expiry ~= nil and expiry > now then
 		return false

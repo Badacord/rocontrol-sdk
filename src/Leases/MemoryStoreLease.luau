@@ -10,7 +10,12 @@
 export type LeaseOutcome = "won" | "lost" | "unavailable"
 
 export type LeaseHashMap = {
-	updateAsync: (self: LeaseHashMap, key: string, ttlSeconds: number, transform: (any) -> any) -> any,
+	updateAsync: (
+		self: LeaseHashMap,
+		key: string,
+		ttlSeconds: number,
+		transform: (any) -> any
+	) -> any,
 }
 
 export type ClaimParams = {

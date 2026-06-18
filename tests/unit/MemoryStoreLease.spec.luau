@@ -64,18 +64,39 @@ return function(t: any)
 		t:it("lets a new server reclaim after expiry", function()
 			local map = fakeMap()
 			t:eq(
-				MemoryStoreLease.tryClaim({ hashMap = map, now = 0, jobId = "A", occurrenceId = "e:1", ttlSeconds = 180, sdkVersion = "v" }),
+				MemoryStoreLease.tryClaim({
+					hashMap = map,
+					now = 0,
+					jobId = "A",
+					occurrenceId = "e:1",
+					ttlSeconds = 180,
+					sdkVersion = "v",
+				}),
 				"won"
 			)
 			t:eq(
-				MemoryStoreLease.tryClaim({ hashMap = map, now = 200, jobId = "B", occurrenceId = "e:1", ttlSeconds = 180, sdkVersion = "v" }),
+				MemoryStoreLease.tryClaim({
+					hashMap = map,
+					now = 200,
+					jobId = "B",
+					occurrenceId = "e:1",
+					ttlSeconds = 180,
+					sdkVersion = "v",
+				}),
 				"won"
 			)
 		end)
 
 		t:it("treats MemoryStore errors as unavailable", function()
 			t:eq(
-				MemoryStoreLease.tryClaim({ hashMap = erroringMap(), now = 0, jobId = "A", occurrenceId = "e:1", ttlSeconds = 180, sdkVersion = "v" }),
+				MemoryStoreLease.tryClaim({
+					hashMap = erroringMap(),
+					now = 0,
+					jobId = "A",
+					occurrenceId = "e:1",
+					ttlSeconds = 180,
+					sdkVersion = "v",
+				}),
 				"unavailable"
 			)
 		end)

@@ -36,8 +36,14 @@ local function encodeValue(value: any): string
 	elseif valueType == "boolean" then
 		return tostring(value)
 	elseif valueType == "number" then
-		assert(value == value and value ~= math.huge and value ~= -math.huge, "canonical json: non-finite number")
-		assert(math.floor(value) == value, "canonical json: numbers must be integers (normalize first)")
+		assert(
+			value == value and value ~= math.huge and value ~= -math.huge,
+			"canonical json: non-finite number"
+		)
+		assert(
+			math.floor(value) == value,
+			"canonical json: numbers must be integers (normalize first)"
+		)
 		return string.format("%d", value)
 	elseif valueType == "string" then
 		return encodeString(value)

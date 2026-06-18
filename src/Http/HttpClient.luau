@@ -55,7 +55,11 @@ function HttpClient.new(deps: Deps)
 	return self
 end
 
-local function buildHeaders(deps: Deps, requestId: string, options: SendOptions): { [string]: string }
+local function buildHeaders(
+	deps: Deps,
+	requestId: string,
+	options: SendOptions
+): { [string]: string }
 	local headers: { [string]: string } = {
 		["Authorization"] = "Bearer " .. deps.config.apiKey,
 		["Content-Type"] = "application/json",
@@ -74,7 +78,12 @@ local function buildHeaders(deps: Deps, requestId: string, options: SendOptions)
 end
 
 -- Sends to a named route. `payload` is JSON-encoded for write methods.
-function HttpClient.send(self: any, routeName: string, payload: any?, options: SendOptions?): SendResult
+function HttpClient.send(
+	self: any,
+	routeName: string,
+	payload: any?,
+	options: SendOptions?
+): SendResult
 	local deps: Deps = self._deps
 	local opts: SendOptions = options or {}
 	local requestId = opts.requestId or Uuid.requestId()
@@ -89,7 +98,8 @@ function HttpClient.send(self: any, routeName: string, payload: any?, options: S
 		}
 	end
 
-	local log = deps.logger:child({ route = routeName, requestId = requestId, operation = routeName })
+	local log =
+		deps.logger:child({ route = routeName, requestId = requestId, operation = routeName })
 	local url = deps.config.baseUrl .. route.path
 	local headers = buildHeaders(deps, requestId, opts)
 	local body: string? = nil
@@ -111,7 +121,11 @@ function HttpClient.send(self: any, routeName: string, payload: any?, options: S
 			return {
 				ok = false,
 				requestId = requestId,
-				error = ErrorFactory.new("CircuitOpen", "Circuit breaker is open", { requestId = requestId }),
+				error = ErrorFactory.new(
+					"CircuitOpen",
+					"Circuit breaker is open",
+					{ requestId = requestId }
+				),
 			}
 		end
 
@@ -127,7 +141,10 @@ function HttpClient.send(self: any, routeName: string, payload: any?, options: S
 		local classification = ResponseClassifier.classify(response)
 		if classification.ok then
 			deps.circuit:recordSuccess()
-			log:debug("request ok", { attempt = attempt, statusCode = response.statusCode, durationMs = elapsedMs })
+			log:debug(
+				"request ok",
+				{ attempt = attempt, statusCode = response.statusCode, durationMs = elapsedMs }
+			)
 			return {
 				ok = true,
 				statusCode = response.statusCode,
@@ -156,14 +173,16 @@ function HttpClient.send(self: any, routeName: string, payload: any?, options: S
 
 		deps.circuit:recordFailure(deps.clock:now())
 		deps.metrics:count(Metrics.Names.httpRetry, 1, { route = routeName, kind = err.kind })
-		local wait = Retry.nextWait(attempt, backoff, ResponseClassifier.retryAfterSeconds(response))
+		local wait =
+			Retry.nextWait(attempt, backoff, ResponseClassifier.retryAfterSeconds(response))
 		deps.clock:sleep(wait)
 	end
 
 	return {
 		ok = false,
 		requestId = requestId,
-		error = lastError or ErrorFactory.new("Unknown", "Request failed", { requestId = requestId }),
+		error = lastError
+			or ErrorFactory.new("Unknown", "Request failed", { requestId = requestId }),
 	}
 end
 

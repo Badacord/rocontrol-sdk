@@ -13,7 +13,7 @@ type LogLevel = Types.LogLevel
 local Config = {}
 
 export type ResolvedConfig = {
-	apiKey: string,
+	apiKey: any,
 	baseUrl: string,
 	logLevel: LogLevel,
 	httpTimeoutSeconds: number,
@@ -44,6 +44,10 @@ local function isNumberInRange(min: number, max: number): (any) -> boolean
 	return function(value: any): boolean
 		return type(value) == "number" and value == value and value >= min and value <= max
 	end
+end
+
+local function isApiKey(value: any): boolean
+	return (type(value) == "string" and value ~= "") or typeof(value) == "Secret"
 end
 
 -- Defaults applied when the field is omitted, each with a validator + message.
@@ -115,8 +119,9 @@ function Config.resolve(input: InitConfig?): (ResolvedConfig?, RoControlError?)
 
 	local raw = input :: any
 
-	if type(raw.apiKey) ~= "string" or raw.apiKey == "" then
-		return nil, ErrorFactory.config("apiKey is required and must be a non-empty string")
+	if not isApiKey(raw.apiKey) then
+		return nil,
+			ErrorFactory.config("apiKey is required and must be a non-empty string or Secret")
 	end
 
 	local resolved: any = { apiKey = raw.apiKey }

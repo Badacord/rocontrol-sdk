@@ -43,7 +43,7 @@ export type Deps = {
 	env: any, -- Env.Environment
 	config: {
 		baseUrl: string,
-		apiKey: string,
+		apiKey: any,
 		maxRetries: number,
 		retryBaseDelaySeconds: number,
 		retryMaxDelaySeconds: number,
@@ -55,13 +55,16 @@ function HttpClient.new(deps: Deps)
 	return self
 end
 
-local function buildHeaders(
-	deps: Deps,
-	requestId: string,
-	options: SendOptions
-): { [string]: string }
-	local headers: { [string]: string } = {
-		["Authorization"] = "Bearer " .. deps.config.apiKey,
+local function buildHeaders(deps: Deps, requestId: string, options: SendOptions): { [string]: any }
+	local authorization: any
+	if typeof(deps.config.apiKey) == "Secret" then
+		authorization = deps.config.apiKey:AddPrefix("Bearer ")
+	else
+		authorization = "Bearer " .. deps.config.apiKey
+	end
+
+	local headers: { [string]: any } = {
+		["Authorization"] = authorization,
 		["Content-Type"] = "application/json",
 		["RoControl-SDK-Version"] = deps.metadata.version,
 		["RoControl-Protocol-Version"] = deps.metadata.protocolVersion,

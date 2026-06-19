@@ -6,7 +6,7 @@
 export type HttpRequest = {
 	method: string,
 	url: string,
-	headers: { [string]: string },
+	headers: { [string]: any },
 	body: string?,
 }
 

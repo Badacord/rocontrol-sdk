@@ -23,7 +23,7 @@ export type MetricsSink = {
 }
 
 export type InitConfig = {
-	apiKey: string,
+	apiKey: any,
 	baseUrl: string?,
 	logger: Logger?,
 	logLevel: LogLevel?,

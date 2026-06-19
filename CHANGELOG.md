@@ -6,6 +6,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The SDK package version and the wire `protocolVersion` are tracked separately.
 
+## [0.2.2] - 2026-06-19
+
+### Added
+
+- `RoControl.init({ apiKey = ... })` now accepts Roblox `Secret` values, allowing
+  games to pass `HttpService:GetSecret(...)` directly instead of storing SDK keys
+  in string values or attributes.
+
 ## [0.2.1] - 2026-06-18
 
 ### Changed

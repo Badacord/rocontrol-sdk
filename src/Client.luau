@@ -400,6 +400,19 @@ function Client.getNextEvent(self: any): Types.RoControlUpcomingEvent?
 	return result.nextEvent or result.active
 end
 
+-- Convenience: the soonest event that has NOT started yet, or nil. Unlike
+-- getNextEvent this never returns a currently-active (already-started) event.
+-- Use this for Roblox event RSVP: SocialService:PromptRsvpToEventAsync /
+-- GetEventRsvpStatusAsync reject events that have already started, so an
+-- already-active event would fail with "invalid event id". Yields.
+function Client.getNextUpcomingEvent(self: any): Types.RoControlUpcomingEvent?
+	local result = self:getUpcomingEvents()
+	if not result.ok then
+		return nil
+	end
+	return result.nextEvent
+end
+
 function Client.getHealth(self: any)
 	local now = self._runtime.clock:now()
 	return {

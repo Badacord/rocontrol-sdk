@@ -6,6 +6,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 The SDK package version and the wire `protocolVersion` are tracked separately.
 
+## [0.2.3] - 2026-06-25
+
+### Added
+
+- `client:getNextUpcomingEvent()`: returns the soonest event that has **not
+  started yet**, or `nil`. Unlike `getNextEvent` it never falls back to a
+  currently-active (already-started) event. Use it for Roblox event RSVP —
+  `SocialService:PromptRsvpToEventAsync` / `GetEventRsvpStatusAsync` reject
+  events that have already started, so handing them an active event fails with
+  "invalid event id". Backward compatible; `getNextEvent` is unchanged.
+
 ## [0.2.2] - 2026-06-19
 
 ### Added

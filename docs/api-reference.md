@@ -36,6 +36,7 @@ calling from the client errors.
 | `retryFailedOperation(failed)` | `OperationResult` | Re-dispatch a failed operation. |
 | `getUpcomingEvents()` | `UpcomingEventsResult` | **Yields.** Reads the universe's upcoming Roblox virtual events from the backend. Never raises. |
 | `getNextEvent()` | `RoControlUpcomingEvent?` | **Yields.** Convenience: the soonest not-yet-started event (or an active one), else `nil`. |
+| `getNextUpcomingEvent()` | `RoControlUpcomingEvent?` | **Yields.** Like `getNextEvent` but never returns an already-started event — use for RSVP (`SocialService` rejects started events). |
 | `getHealth()` | `HealthStatus` | Circuit state, pending count, timestamps. |
 | `flush()` | `()` | Bounded wait until pending work drains. |
 | `destroy()` | `()` | Stop accepting work; flush; release resources. |

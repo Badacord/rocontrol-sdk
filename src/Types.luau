@@ -179,6 +179,7 @@ export type RoControlClient = {
 	retryFailedOperation: (self: RoControlClient, failed: FailedOperation) -> OperationResult,
 	getUpcomingEvents: (self: RoControlClient) -> UpcomingEventsResult,
 	getNextEvent: (self: RoControlClient) -> RoControlUpcomingEvent?,
+	getNextUpcomingEvent: (self: RoControlClient) -> RoControlUpcomingEvent?,
 	getHealth: (self: RoControlClient) -> HealthStatus,
 	flush: (self: RoControlClient) -> (),
 	destroy: (self: RoControlClient) -> (),
